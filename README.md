@@ -1,15 +1,21 @@
 ## UniFi Controller API client class
 
-A PHP class which provides access to Ubiquiti's [**UniFi SDN Controller API**](https://unifi-sdn.ui.com/), versions 4.X.X and 5.X.X of the UniFi SDN Controller software are supported (version 5.10.19 has been confirmed to work). It's a standalone version of the class which is used in our API browser tool which can be found [here](https://github.com/Art-of-WiFi/UniFi-API-browser).
+A PHP class that provides access to Ubiquiti's [**UniFi SDN Controller**](https://unifi-sdn.ui.com/) API, versions 4.X.X and 5.X.X of the UniFi SDN Controller software are supported (version 5.12.66 has been confirmed to work) as well as UbiOS-based controllers (version 5.12.59 has been confirmed to work). This class is used in our API browser tool which can be found [here](https://github.com/Art-of-WiFi/UniFi-API-browser).
 
-This class can be installed manually or using composer/[packagist](https://packagist.org/packages/art-of-wifi/unifi-api-client) for easy inclusion in your projects.
+The package can be installed manually or using composer/[packagist](https://packagist.org/packages/art-of-wifi/unifi-api-client) for easy inclusion in your projects.
 
 ## Requirements
 
-- a web server with PHP and cURL modules installed (tested on Apache 2.4 with PHP Version 5.6.1 and cURL 7.42.1 and with PHP 7.2.10 and cURL 7.58.0)
+- a web server with PHP and cURL modules installed (tested on Apache 2.4 with PHP Version 5.6.1 and cURL 7.42.1 and with PHP 7.2.24 and cURL 7.58.0)
 - network connectivity between this web server and the server and port (normally TCP port 8443) where the UniFi Controller is running
 
-## Installation ##
+## UbiOS Support
+
+Support for UbiOS-based controllers (UniFi Dream Machine Pro) has been added as of version 1.1.47. The class automatically detects UbiOS devices and adjusts URLs and several functions/methods accordingly. If your own code applies strict validation of the URL that is passed to the constructor, please adapt your logic to allow URLs without a port suffix when dealing with a UbiOS-based controller.
+
+Please test all methods you plan on using thoroughly before using the API Client with UbiOS devices in a production environment.
+
+## Installation
 
 You can use [Composer](#composer), [Git](#git) or simply [Download the Release](#download-the-release) to install the API client class.
 
@@ -84,17 +90,17 @@ Please refer to the `examples/` directory for some more detailed examples which 
 
 #### IMPORTANT NOTES:
 
-1. In the above example, `$site_id` is the short site "name" (usually 8 characters long) that is visible in the URL when managing the site in the UniFi SDN Controller, for example with this URL:
+1. In the above example, `$site_id` is the short site "name" (usually 8 characters long) that is visible in the URL when managing the site in the UniFi SDN Controller. For example with this URL:
 
    `https://<controller IP address or FQDN>:8443/manage/site/jl3z2shm/dashboard`
 
    `jl3z2shm` is the short site "name" and the value to assign to $site_id.
 
-2. The last optional parameter that is passed to the constructor in the above example (`true`), enables validation of the controller's SSL certificate which is otherwise **disabled** by default. It is highly recommended to enable this feature in production environments where you have a valid SSL cert installed on the UniFi Controller, and which is associated with the FQDN of the server as used in the `controller_url` parameter. This option was added with API client version 1.1.16.
+2. The last optional parameter that is passed to the constructor in the above example (`true`), enables validation of the controller's SSL certificate which is otherwise **disabled** by default. It is highly recommended to enable this feature in production environments where you have a valid SSL cert installed on the UniFi Controller that is associated with the FQDN in the `controller_url` parameter. This option was added with API client version 1.1.16.
 
 ## Functions/methods supported
 
-The class currently supports the following functions/methods to GET/POST/PUT/DELETE data through the UniFi Controller API. Please refer to the source code for more details on the functions/methods and their respective parameters.
+The class currently supports the following functions/methods to GET/POST/PUT/DELETE data through the UniFi Controller API. Please refer to the comments in the source code for more details on the functions/methods and their respective parameters.
 
 - login()
 - logout()
@@ -169,7 +175,9 @@ The class currently supports the following functions/methods to GET/POST/PUT/DEL
 - power_cycle_switch_port()
 - reconnect_sta()
 - rename_ap()
-- restart_ap()
+- restart_ap() (deprecated but still available as alias)
+- restart_device()
+- reboot_cloudkey()
 - revoke_voucher()
 - set_ap_radiosettings()
 - set_device_settings_base()
@@ -187,6 +195,9 @@ The class currently supports the following functions/methods to GET/POST/PUT/DEL
 - set_site_name()
 - set_site_ntp()
 - set_site_snmp()
+- set_super_mgmt_settings_base()
+- set_super_smtp_settings_base()
+- set_super_identity_settings_base()
 - set_sta_name()
 - set_sta_note()
 - set_usergroup()
@@ -231,15 +242,28 @@ The class currently supports the following functions/methods to GET/POST/PUT/DEL
 - cancel_rolling_upgrade()
 - cmd_stat()
 
-Internal functions, getters/setters:
+Other functions, getters/setters:
 
 - set_debug()
 - get_debug()
 - set_site()
 - get_site()
-- get_cookie() (renamed from getcookie())
+- set_cookies()
+- get_cookies()
+- get_cookie() (renamed from getcookie(), deprecated but still available, use get_cookies() instead)
 - get_last_results_raw()
 - get_last_error_message()
+- set_request_type()
+- get_request_type()
+- set_ssl_verify_peer()
+- get_ssl_verify_peer()
+- set_ssl_verify_host()
+- get_ssl_verify_host()
+- set_connection_timeout()
+- get_connection_timeout()
+- set_is_unifi_os()
+- get_is_unifi_os()
+
 
 ## Need help or have suggestions?
 
@@ -258,7 +282,7 @@ This class is based on the initial work by the following developers:
 
 and the API as published by Ubiquiti:
 
-- https://dl.ubnt.com/unifi/5.10.19/unifi_sh_api
+- https://dl.ui.com/unifi/5.12.35/unifi_sh_api
 
 ## Important Disclaimer
 
